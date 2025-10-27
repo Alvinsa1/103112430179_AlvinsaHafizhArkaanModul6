@@ -1,5 +1,5 @@
 # <h1 align="center">Laporan Praktikum Modul 6 <br> Doubly Linked List (Bagian Pertama)</h1>
-<p align="center">Nashir Khoirul Huda - 103112400168</p>
+<p align="center">Alvinsa Hafizh Arkaan - 103112430179</p>
 
 ## Dasar Teori
 
