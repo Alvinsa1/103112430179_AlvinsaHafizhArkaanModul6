@@ -1,10 +1,9 @@
 # <h1 align="center">Laporan Praktikum Modul 6 <br> Doubly Linked List (Bagian Pertama)</h1>
-<p align="center">Alvinsa Hafizh Arkaan - 103112430179</p>
+<p align="center">Dahragassya Safnas Adiyata - 103112430146</p>
 
 ## Dasar Teori
 
-Doubly Linked List Doubly Linked List (DLL) adalah sebuah struktur data yang terdiri dari node-node saling terhubung dua arah melalui pointer prev dan next. Struktur ini memungkinkan penelusuran data maju dan mundur dan juga memudahkan proses penyisipan dan penghapusan di berbagai posisi. Walaupun lebih fleksibel dibanding Singly Linked List, DLL membutuhkan memori lebih besar dan pengelolaan pointer yang lebih kompleks. Struktur ini sering digunakan pada sistem seperti riwayat browser dan playlist musik.
-
+Doubly Linked List adalah salah satu struktur data dinamis yang terdiri dari sekumpulan elemen (node) yang saling terhubung melalui dua pointer, yaitu pointer ke elemen berikutnya (next) dan pointer ke elemen sebelumnya (prev). Setiap node pada Doubly Linked List umumnya berisi data dan dua pointer tersebut, sehingga memungkinkan proses penelusuran data dilakukan dari arah depan maupun belakang. Berbeda dengan singly linked list yang hanya memiliki satu arah, Doubly Linked List lebih fleksibel karena memudahkan operasi seperti penyisipan dan penghapusan data di awal, tengah, maupun akhir list tanpa harus menelusuri dari awal. Namun, struktur ini memerlukan lebih banyak memori karena adanya dua pointer dalam setiap node.
 ## Guide
 
 ```go
@@ -316,23 +315,226 @@ tahun     : 90
 
 ## doublylist.h
 ```go
+#ifndef DOUBLYLIST_H
+#define DOUBLYLIST_H
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct kendaraan {
+    string nopol;
+    string warna;
+    int thnBuat;
+};
+
+typedef kendaraan infotype;
+
+struct ElmList {
+    infotype info;
+    ElmList *next;
+    ElmList *prev;
+};
+
+typedef ElmList* address;
+
+struct List {
+    address first;
+    address last;
+};
+
+void createList(List &L);
+address alokasi(infotype x);
+void dealokasi(address &P);
+void insertLast(List &L, address P);
+void printInfo(List L);
+address findElm(List L, string nopol);
+void deleteFirst(List &L, address &P);
+void deleteLast(List &L, address &P);
+void deleteAfter(address Prec, address &P);
+
+#endif
+
 
 ```
+> Output
+> ![Screenshot bagian x](outputmodul6/Screenshot_doublylisth.png)
+
 
 ## doublylist.cpp
 ```go
+#include "doublylist.h"
 
+void createList(List &L) {
+    L.first = NULL;
+    L.last = NULL;
+}
+
+address alokasi(infotype x) {
+    address P = new ElmList;
+    P->info = x;
+    P->next = NULL;
+    P->prev = NULL;
+    return P;
+}
+
+void dealokasi(address &P) {
+    delete P;
+    P = NULL;
+}
+
+void insertLast(List &L, address P) {
+    if (L.first == NULL) {
+        L.first = P;
+        L.last = P;
+    } else {
+        L.last->next = P;
+        P->prev = L.last;
+        L.last = P;
+    }
+}
+
+void printInfo(List L) {
+    address P = L.first;
+    if (P == NULL) {
+        cout << "List kosong." << endl;
+        return;
+    }
+    cout << "Data kendaraan dalam list:" << endl;
+    while (P != NULL) {
+        cout << "Nopol : " << P->info.nopol
+             << ", Warna : " << P->info.warna
+             << ", Tahun : " << P->info.thnBuat << endl;
+        P = P->next;
+    }
+    cout << endl;
+}
+
+address findElm(List L, string nopol) {
+    address P = L.first;
+    while (P != NULL) {
+        if (P->info.nopol == nopol) {
+            return P;
+        }
+        P = P->next;
+    }
+    return NULL;
+}
+
+void deleteFirst(List &L, address &P) {
+    if (L.first != NULL) {
+        P = L.first;
+        if (L.first == L.last) {
+            L.first = NULL;
+            L.last = NULL;
+        } else {
+            L.first = L.first->next;
+            L.first->prev = NULL;
+            P->next = NULL;
+        }
+    }
+}
+
+void deleteLast(List &L, address &P) {
+    if (L.last != NULL) {
+        P = L.last;
+        if (L.first == L.last) {
+            L.first = NULL;
+            L.last = NULL;
+        } else {
+            L.last = L.last->prev;
+            L.last->next = NULL;
+            P->prev = NULL;
+        }
+    }
+}
+
+void deleteAfter(address Prec, address &P) {
+    if (Prec != NULL && Prec->next != NULL) {
+        P = Prec->next;
+        Prec->next = P->next;
+        if (P->next != NULL) {
+            P->next->prev = Prec;
+        }
+        P->next = NULL;
+        P->prev = NULL;
+    }
+}
 ```
+> Output
+> ![Screenshot bagian x](outputmodul6/Screenshot_doublylist.png)
+
 
 ## main.cpp
 ```go
+#include "doublylist.h"
+
+int main() {
+    List L;
+    createList(L);
+
+    kendaraan k1 = {"D001", "Merah", 2020};
+    kendaraan k2 = {"D002", "Hitam", 2018};
+    kendaraan k3 = {"D003", "Putih", 2022};
+    kendaraan k4 = {"D004", "Biru", 2021};
+
+    insertLast(L, alokasi(k1));
+    insertLast(L, alokasi(k2));
+    insertLast(L, alokasi(k3));
+    insertLast(L, alokasi(k4));
+
+    cout << "=== DATA AWAL ===" << endl;
+    printInfo(L);
+
+    address found = findElm(L, "D001");
+    if (found != NULL) {
+        cout << "Data ditemukan: "
+             << found->info.nopol << ", "
+             << found->info.warna << ", "
+             << found->info.thnBuat << endl;
+    } else {
+        cout << "Data tidak ditemukan!" << endl;
+    }
+
+    cout << endl;
+
+    address del;
+    deleteFirst(L, del);
+    dealokasi(del);
+
+    cout << "=== DATA SETELAH HAPUS FIRST ===" << endl;
+    printInfo(L);
+
+    address prec = findElm(L, "D002");
+    if (prec != NULL) {
+        deleteAfter(prec, del);
+        if (del != NULL) {
+            cout << "Menghapus data setelah D002 yaitu: " 
+                 << del->info.nopol << endl;
+            dealokasi(del);
+        }
+    }
+
+    cout << "=== DATA SETELAH DELETE AFTER D002 ===" << endl;
+    printInfo(L);
+
+    dealokasi(del);
+
+    cout << "=== DATA SETELAH HAPUS LAST ===" << endl;
+    printInfo(L);
+
+    return 0;
+}
 
 ```
 
 > Output
-> ![Screenshot bagian x]()
+> ![Screenshot bagian x](outputmodul6/Screenshot_main.png)
 
-Program ini merupakan implementasi struktur data **Doubly Linked List** untuk menyimpan data kendaraan yang terdiri dari nomor polisi, warna, dan tahun pembuatan. Setiap data disimpan dalam node yang memiliki dua pointer (`next` dan `prev`) sehingga dapat ditelusuri maju dan mundur. Program memungkinkan pengguna menambahkan data kendaraan baru ke dalam list, namun terlebih dahulu memeriksa apakah nomor polisi sudah terdaftar menggunakan fungsi pencarian. Jika belum, data dimasukkan di bagian akhir list melalui prosedur `insertLast`. Setelah input selesai, seluruh data kendaraan ditampilkan ke layar dengan menelusuri list dari elemen terakhir ke awal menggunakan prosedur `printInfo`.
+> Hasil
+> ![Screenshot bagian x](outputmodul6/Screenshot_hasil.png)
+
+Program di atas merupakan implementasi struktur data Doubly Linked List yang digunakan untuk mengelola data kendaraan yang terdiri dari nomor polisi, warna, dan tahun pembuatan. Program diawali dengan membuat list kosong menggunakan createList(L), kemudian menambahkan empat data kendaraan ke dalam list melalui fungsi insertLast(L, alokasi(k)). Setelah itu, program menampilkan seluruh data kendaraan dengan printInfo(L) dan melakukan pencarian data berdasarkan nomor polisi menggunakan findElm(L, "D001"). Selanjutnya, dilakukan operasi penghapusan elemen pertama menggunakan deleteFirst, serta penghapusan elemen setelah data dengan nomor polisi tertentu melalui deleteAfter.
 
 ## Referensi
 1. https://www.w3schools.com/dsa/dsa_theory_linkedlists.php
