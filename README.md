@@ -525,7 +525,7 @@ int main() {
 ```
 
 > Output
-> ![Screenshot bagian x](doublylist.png)
+> ![Screenshot bagian x](doubleylist.png)
 
 
 Program di atas merupakan implementasi struktur data Doubly Linked List yang digunakan untuk mengelola data kendaraan yang terdiri dari nomor polisi, warna, dan tahun pembuatan. Program diawali dengan membuat list kosong menggunakan createList(L), kemudian menambahkan empat data kendaraan ke dalam list melalui fungsi insertLast(L, alokasi(k)). Setelah itu, program menampilkan seluruh data kendaraan dengan printInfo(L) dan melakukan pencarian data berdasarkan nomor polisi menggunakan findElm(L, "D001"). Selanjutnya, dilakukan operasi penghapusan elemen pertama menggunakan deleteFirst, serta penghapusan elemen setelah data dengan nomor polisi tertentu melalui deleteAfter.
